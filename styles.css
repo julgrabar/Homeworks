@@ -44,9 +44,6 @@ body{
     cursor: pointer;
 }
 
-/* 
-.toggle-section-button:hover,
-.toggle-section-button:focus, */
 .toggle-section-button.chosen{
     background-color: var(--table-head-bg);
 }
