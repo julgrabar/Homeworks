@@ -1,5 +1,10 @@
 import {refs} from "./refs.js"
 import {categories} from "./data.js";
+import {
+    getActiveNotes,
+    getArchivedNotes,
+    data
+} from "./index.js"
 
 function renderNotes(notes){
     
@@ -56,7 +61,7 @@ function changeTableSection(event){
         ? refs.btnActive
         : refs.btnArchived
     ).disabled = false;
-    resetTable(refs.notesTable);
+    resetTable();
     renderNotes(event.target === refs.btnArchived 
         ? getArchivedNotes()
         : getActiveNotes()
@@ -70,8 +75,12 @@ function changeTableSection(event){
         : "unarchive";
 }
 
-function refreshTables(){
+function resetTable(){
     refs.notesTable.innerHTML="";
+}
+
+function refreshTables(){
+    resetTable();
     rerenderStats();
     renderNotes(refs.notesTable.dataset.section === "active" 
         ? getActiveNotes() 

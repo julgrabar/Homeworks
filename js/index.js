@@ -5,7 +5,7 @@ import {
     rerenderStats,
     refreshTables,
     changeTableSection
-} from "./render";
+} from "./render.js";
 
 let data = [...notes];
 
@@ -176,3 +176,9 @@ function closeModal(){
     refs.submitNewNote.removeEventListener("click", onSubmitBtn);
     resetForm()
 }  
+
+export{
+    data,
+    getActiveNotes,
+    getArchivedNotes
+}
