@@ -1,191 +1,75 @@
-import {notes, categories} from "../data.js";
-let data = [...notes]
-const refs = {
-    notesTable: document.querySelector(".notes-table"),
-    statsTable: document.querySelector(".stats-table"),
-    toggleSection: document.querySelector(".toggle-section"),
-    btnActive: document.querySelector(".toggle-section .active"),
-    btnArchived: document.querySelector(".toggle-section .archived"),
-    createNoteBtn: document.querySelector(".create-note-btn"),
-    modal: document.querySelector(".backdrop"),
-    closeModalBtn:document.querySelector(".btn-close"),
-    submitNewNote:document.querySelector(".submit-btn"),
-    form: document.querySelector(".new-note-form"),
-    timeOptions: {
-        year: "numeric",
-        month: "long",
-        day: "2-digit"
-    },
-    deleteAll:document.querySelector(".delete-all"),
-    archiveAll: document.querySelector(".archive-all")
-}
+import {notes, categories} from "./data.js";
+import {refs} from "./refs.js";
+import {
+    renderNotes,
+    rerenderStats,
+    refreshTables,
+    changeTableSection
+} from "./render";
 
-renderNotes(getActiveNotes())
-rerenderStats()
+let data = [...notes];
+
+renderNotes(getActiveNotes());
+rerenderStats();
 
 
-refs.deleteAll.addEventListener("click", deleteAll)
+refs.deleteAll.addEventListener("click", deleteAll);
+refs.createNoteBtn.addEventListener("click", openModal);
+refs.toggleSection.addEventListener("click", changeTableSection);
+refs.notesTable.addEventListener("click", onTableClick);
+refs.archiveAll.addEventListener("click", changeStatusOfAllNotes);
 
-function renderNotes(notes){
-
-    let markup = notes.map(({id, name, created, category, content, dates, archived})=>{
-        return (`
-        <tr data-id = "${id}">
-            <td><div class="note-type">${categories[category]}</div></td>
-            <td class="name">${name}</td>
-            <td>${created}</td>
-            <td>${category}</td>
-            <td>${content}</td>
-            <td>${dates}</td>
-            <td>
-            <span class="material-icons btn" data-act = "edit">mode_edit</span>
-            <span class="material-icons btn" data-act = "archive">${archived?"unarchive":"archive"}</span>
-            <span class="material-icons btn" data-act = "delete">delete_sweep</span>
-            </td>
-          </tr>
-        `)
-    }).join("");
-
-    refs.notesTable.insertAdjacentHTML('beforeend', markup)
-}
-
-
-function rerenderStats(){
-    refs.statsTable.innerHTML="";
-
-    let markup = Object.keys(categories).map(category=>{
-        let arch = data.filter(item=>item.category===category && item.archived).length;
-        let act = data.filter(item=>item.category===category && !item.archived).length;
-
-        if(arch === 0 && act===0){
-            return
-        }
-        return(`
-        <tr>
-        <td><div class="note-type">${categories[category]}</div></td>
-        <td class="name">${category}</td>
-        <td>${act}</td>
-        <td>${arch}</td>
-      </tr>`)
-    }).join("");
-    
-    refs.statsTable.insertAdjacentHTML('beforeend', markup)
-}
-
-
-function getArchivedNotes(){
-    return data.filter(item=>item.archived)
-}
-
-function getActiveNotes(){
-    return data.filter(item=>!item.archived)
-}
-
-
-function changeTableSection(event){
-    refs.btnArchived.classList.toggle('chosen');
-    refs.btnActive.classList.toggle('chosen');
-    event.target.disabled = true;
-    (event.target === refs.btnArchived 
-        ? refs.btnActive
-        : refs.btnArchived
-    ).disabled = false;
-    resetTable(refs.notesTable);
-    renderNotes(event.target === refs.btnArchived 
-        ? getArchivedNotes()
-        : getActiveNotes()
-    );
-    refs.createNoteBtn.disabled = event.target === refs.btnArchived;
-    refs.notesTable.dataset.section = event.target === refs.btnArchived 
-        ? "archive"
-        : "active";
-    refs.archiveAll.innerHTML = refs.notesTable.dataset.section === "active"
-        ? "archive"
-        : "unarchive"
-}
-
-function resetTable (){
-    refs.notesTable.innerHTML="";
-}
 
 function onSubmitBtn(event){
     try{
-    event.preventDefault();
-    const {name, content, category} = event.target;
+        event.preventDefault();
+        const {name, content, category} = event.target;
 
-    if(name.value.trim() === "" || content.value.trim() === "" || category.value.trim() === ""){
-        // console.log()
-        throw new SyntaxError("Fill all the inputs!");
+        if(name.value.trim() === "" || content.value.trim() === "" || category.value.trim() === ""){
+            throw new SyntaxError("Fill all the inputs!");
+        }
+
+        addCategory(category.value);
+        
+        refs.modal.dataset.noteId
+            ? editElement( refs.modal.dataset.noteId, event.target)
+            : createNewNote(event.target);
+        
+        closeModal();
+        refreshTables();
+
+    } catch(error) {
+        alert(error.message );
     }
-    console.log("hi")
-    addCategory(category.value)
-    
-    refs.modal.dataset.noteId
-        ? editElement( refs.modal.dataset.noteId, event.target)
-        : createNewNote(event.target)
-    
-    
-    closeModal();
-    resetTable(refs.notesTable);
-    rerenderStats()
-    renderNotes(refs.notesTable.dataset.section === "active" 
-        ? getActiveNotes() 
-        : getArchivedNotes())
-} catch(error) {
-    alert(error.message );
-  }
     
 }
+
 
 function addCategory (str){
     if(Object.keys(categories).includes(str) ){
      return
     }
-    categories[str] = '<span class="material-icons">more_horiz</span>'
+    categories[str] = '<span class="material-icons">more_horiz</span>';
 }
 
+
 function createNewNote({name, content, category}){
-    let date = new Date( );
-    
     let newNote = {
         id: String(Date.now()),
         name: name.value,
-        created: date.toLocaleString("en-US", refs.timeOptions),
+        created: makeFormatedDate(),
         category: category.value,
         content: content.value,
         dates: getDates(content.value),
         archived: false
     }
+
     data.push(newNote);
 }
 
 
-function openModal(){
-    refs.modal.classList.remove("visually-hidden");
-    refs.closeModalBtn.addEventListener("click", closeModal);
-    refs.form.addEventListener("submit", onSubmitBtn);
-}
-
-function closeModal(){
-    refs.modal.classList.add("visually-hidden");
-    refs.modal.dataset.noteId = "";
-    refs.closeModalBtn.removeEventListener("click", closeModal);
-    refs.submitNewNote.removeEventListener("click", onSubmitBtn);
-    refs.form.reset();
-    refs.form.content.innerHTML = "";
-}
-
-
-
-refs.createNoteBtn.addEventListener("click", openModal)
-refs.toggleSection.addEventListener("click", changeTableSection)
-
-
-
-
-refs.notesTable.addEventListener("click", onTableClick);
 function onTableClick(event){
-    let id=event.target.closest("tr").dataset.id;
+    let id = event.target.closest("tr").dataset.id;
     if(event.target.dataset.act==="delete"){
         deleteElement(id)
     }
@@ -197,41 +81,12 @@ function onTableClick(event){
     }
 }
 
-function deleteElement(id){
-    data = data.filter(item=>item.id !== id)
-    resetTable(refs.notesTable);
-    rerenderStats()
-    renderNotes(refs.notesTable.dataset.section === "active" 
-        ? getActiveNotes() 
-        : getArchivedNotes())
-    
-}
-
-
-function changeStatus (id){
-    let el = data.find(item=>item.id===id);
-    el.archived = !el.archived;
-    resetTable(refs.notesTable);
-    rerenderStats()
-    renderNotes(refs.notesTable.dataset.section === "active" 
-        ? getActiveNotes() 
-        : getArchivedNotes())
-}
-
-
-function deleteAll(){
-    let currentNotes = (refs.notesTable.dataset.section ==="active" 
-        ? getActiveNotes()
-        : getArchivedNotes() )
-    data = data.filter(item=>!currentNotes.includes(item));
-    resetTable(refs.notesTable);
-    rerenderStats()
-}
 
 function onEditBtn(id){
+    openModal();
     let el = data.find(item=>item.id===id);
     refs.modal.dataset.noteId = id;
-    openModal()
+
     refs.form.name.value = el.name;
     refs.form.category.value = el.category;
     refs.form.content.innerHTML = el.content;
@@ -247,16 +102,77 @@ function editElement(id, {name, content, category}){
     el.dates = getDates(content.value);
 }
 
+
+function deleteElement(id){
+    data = data.filter(item=>item.id !== id);
+    refreshTables();
+}
+
+
+function changeStatus (id){
+    let el = data.find(item=>item.id===id);
+    el.archived = !el.archived;
+    refreshTables();
+}
+
+
+function deleteAll(){
+    let currentNotes = (refs.notesTable.dataset.section ==="active" 
+        ? getActiveNotes()
+        : getArchivedNotes())
+    data = data.filter(item=>!currentNotes.includes(item));
+    refreshTables();
+}
+
+
+function changeStatusOfAllNotes(){
+    data.map(note => note.archived = refs.notesTable.dataset.section === "active");
+    refreshTables();
+}
+
+
+function getArchivedNotes(){
+    return data.filter(item=>item.archived);
+}
+
+
+function getActiveNotes(){
+    return data.filter(item =>!item.archived);
+}
+
+
+function makeFormatedDate(){
+    return new Date().toLocaleString("en-US",{
+        year: "numeric",
+        month: "long",
+        day: "2-digit"
+    })
+}
+
+
 function getDates (str){
     let reg = /\d{1,2}\/\d{1,2}\/\d{2,4}/g;
     return (str.match(reg) === null ?  " " : str.match(reg).join(', '))
 }
 
-refs.archiveAll.addEventListener("click", changeStatusOfAllNotes)
 
-function changeStatusOfAllNotes(){
-    
-    data.map(note => note.archived = refs.notesTable.dataset.section === "active")
-    resetTable(refs.notesTable);
-    rerenderStats()
+function resetForm(){
+    refs.modal.dataset.noteId = "";
+    refs.form.reset();
+    refs.form.content.innerHTML = "";
 }
+
+
+function openModal(){
+    refs.modal.classList.remove("visually-hidden");
+    refs.closeModalBtn.addEventListener("click", closeModal);
+    refs.form.addEventListener("submit", onSubmitBtn);
+}
+
+
+function closeModal(){
+    refs.modal.classList.add("visually-hidden");
+    refs.closeModalBtn.removeEventListener("click", closeModal);
+    refs.submitNewNote.removeEventListener("click", onSubmitBtn);
+    resetForm()
+}  

@@ -73,7 +73,6 @@ let categories = {
     "Idea": '<span class="material-icons">tips_and_updates</span>',
     "Quote": '<span class="material-icons">format_quote</span>',
     "Random Thoughts": '<span class="material-icons">psychology</span>',
-
 }
 
 export {notes, categories};
