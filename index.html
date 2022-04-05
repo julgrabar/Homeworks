@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+    />
+    <title>Homework 1</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anybody:wght@400;700&family=DM+Sans:wght@400;500;700&family=Rosario:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="toggle-section">
+        <button type="button" class="toggle-section-button active chosen" disabled>Active notes</button>
+        <button type="button" class="toggle-section-button archived">Archived notes</button>
+      </div>
+      <table class="notes">
+        <thead>
+          <tr class="table-head">
+            <th></th>
+            <th>Name</th>
+            <th>Created</th>
+            <th>Category</th>
+            <th>Content</th>
+            <th>Dates</th>
+            <th>
+              <span class="material-icons btn archive-all">
+                archive
+              </span>
+              <span class="material-icons btn delete-all">
+                delete_sweep
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="notes-table" data-section = "active">
+        </tbody>
+      </table>
+      
+      <div class="wrapper">
+        <button type="button" class="create-note-btn">Create note</button>
+      </div>
+
+      <div class="backdrop visually-hidden" data-type>
+        <div class="modal" >
+          <form name ="new-note-form" class="new-note-form">
+            <label>
+              <span>Note name </span><br>
+              <input 
+              value = "New note"
+              name="name" 
+              type="text" 
+              class="input name-input">
+            </label>
+            <label>
+            <span>Choose or enter category</span><br>
+            <input list="category" name="category" class="input category-input">
+
+              <datalist id="category">
+                <option value="Task">
+                <option value="Random Thoughts">
+                <option value="Idea">
+                <option value="Quote">
+              </datalist>
+            </label>
+            <label>
+              <span>Note text</span><br>
+              <textarea
+              name = "content" 
+              class="input text-input"
+              rows="7"></textarea>
+            </label>
+            <button type="submit" class="submit-btn">Save</button>
+            </form>
+          <button type="reset" class="btn-close">X</button>
+        </div>
+      </div>
+
+      <table class="notes stats">
+        <thead>
+          <tr class="table-head">
+            <th></th>
+            <th>Note Category</th>
+            <th>Active</th>
+            <th>Archived</th>
+          </tr>
+        </thead>
+        <tbody class="stats-table">
+        </tbody>
+      </table>
+    </div>
+  <script type="module" src="js/index.js"></script>
+  </body>
+</html>
