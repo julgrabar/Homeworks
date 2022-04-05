@@ -69,17 +69,27 @@
               class="input name-input">
             </label>
             <label>
+            <span>Choose or enter category</span><br>
+            <input list="category" name="category" class="input category-input">
+
+              <datalist id="category">
+                <option value="Task">
+                <option value="Random Thoughts">
+                <option value="Idea">
+                <option value="Quote">
+              </datalist>
+            </label>
+            <!-- <label>
               <span>Choose category</span><br>
               <select 
               name = "category" 
               class="input category-input">
-                <option value="Task">Task</option>
-                <option value="Random Thoughts">Random Thoughts</option>
-                <option value="Idea">Idea</option>
-                <option value="Quote">Quote</option>
-                <option value="add-option">Add other category</option>
+                <option value="Task">
+                <option value="Random Thoughts">
+                <option value="Idea">
+                <option value="Quote">
               </select>
-            </label>
+            </label> -->
             <label>
               <span>Note text</span><br>
               <textarea

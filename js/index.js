@@ -54,13 +54,18 @@ function rerenderStats(){
     refs.statsTable.innerHTML="";
 
     let markup = Object.keys(categories).map(category=>{
-        // console.log(data.filter(item=>item.category===category && item.archived))
+        let arch = data.filter(item=>item.category===category && item.archived).length;
+        let act = data.filter(item=>item.category===category && !item.archived).length;
+
+        if(arch === 0 && act===0){
+            return
+        }
         return(`
         <tr>
         <td><div class="note-type">${categories[category]}</div></td>
         <td class="name">${category}</td>
-        <td>${data.filter(item=>item.category===category && !item.archived).length}</td>
-        <td>${data.filter(item=>item.category===category && item.archived).length}</td>
+        <td>${act}</td>
+        <td>${arch}</td>
       </tr>`)
     }).join("");
     
@@ -104,13 +109,16 @@ function resetTable (){
 }
 
 function onSubmitBtn(event){
+    try{
     event.preventDefault();
-    const {name, content} = event.target;
+    const {name, content, category} = event.target;
 
-    if(name.value.trim() === "" || content.value.trim() === ""){
-        alert("Enter all the inputs!")
-        return;
+    if(name.value.trim() === "" || content.value.trim() === "" || category.value.trim() === ""){
+        // console.log()
+        throw new SyntaxError("Fill all the inputs!");
     }
+    console.log("hi")
+    addCategory(category.value)
     
     refs.modal.dataset.noteId
         ? editElement( refs.modal.dataset.noteId, event.target)
@@ -123,7 +131,17 @@ function onSubmitBtn(event){
     renderNotes(refs.notesTable.dataset.section === "active" 
         ? getActiveNotes() 
         : getArchivedNotes())
+} catch(error) {
+    alert(error.message );
+  }
     
+}
+
+function addCategory (str){
+    if(Object.keys(categories).includes(str) ){
+     return
+    }
+    categories[str] = '<span class="material-icons">more_horiz</span>'
 }
 
 function createNewNote({name, content, category}){
@@ -232,4 +250,13 @@ function editElement(id, {name, content, category}){
 function getDates (str){
     let reg = /\d{1,2}\/\d{1,2}\/\d{2,4}/g;
     return (str.match(reg) === null ?  " " : str.match(reg).join(', '))
+}
+
+refs.archiveAll.addEventListener("click", changeStatusOfAllNotes)
+
+function changeStatusOfAllNotes(){
+    
+    data.map(note => note.archived = refs.notesTable.dataset.section === "active")
+    resetTable(refs.notesTable);
+    rerenderStats()
 }
