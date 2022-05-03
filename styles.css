@@ -7,7 +7,7 @@
     --body-bg: #fff;
 }
 
-
+/* 
 * {
     box-sizing: border-box;
 }
@@ -32,9 +32,9 @@ body{
     width: 75%;
     margin: 0 auto;
     padding: 40px 0;
-}
+} */
 
-.toggle-section-button{
+/* .toggle-section-button{
     width: 50%;
     margin: 0;
     border: none;
@@ -42,18 +42,18 @@ body{
     background-color: #d1d1d1;
     color: var(--table-head-text);
     cursor: pointer;
-}
+} */
 
 .toggle-section-button.chosen{
     background-color: var(--table-head-bg);
 }
 
-.toggle-section{
+/* .toggle-section{
     display: flex;
     margin-bottom: 40px;
-}
+} */
 
-.notes{
+/* .notes{
     width: 100%;
     border-collapse:separate;
     border-spacing:0 10px;
@@ -70,9 +70,9 @@ body{
 .table-head th{
     padding: 12px;
     text-align: left;
-}
+} */
 
-tr{
+/* tr{
    background-color: var(--note-bg);
 }
 
@@ -84,7 +84,7 @@ td{
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 120px;
-}
+} */
 
 .note-type{
     width:50px;
@@ -120,7 +120,7 @@ td{
     padding: 30px;
 }
 
-.create-note-btn{
+/* .create-note-btn{
     padding: 10px 40px;
     border: none;
     cursor: pointer;
@@ -128,19 +128,19 @@ td{
     background-color: var(--table-head-bg);
     color: var(--table-head-text);
     transition: transform 300ms;
-}
+} */
 
-.create-note-btn:hover{
+/* .create-note-btn:hover{
     transform: scale(1.05);
 }
 
 .create-note-btn:disabled{
     display: none;
-}
+} */
 
-.wrapper{
+/* .wrapper{
     text-align: right;
-}
+} */
 
 .new-note-form{
     display: flex;
